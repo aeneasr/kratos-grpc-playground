@@ -1,0 +1,251 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "ory/kratos/selfservice/login/v1alpha1/login.proto",
+    "version": "version not set"
+  },
+  "tags": [
+    {
+      "name": "FlowService"
+    }
+  ],
+  "consumes": [
+    "application/json"
+  ],
+  "produces": [
+    "application/json"
+  ],
+  "paths": {
+    "/self-service/login/flows/{flowId}": {
+      "get": {
+        "operationId": "FlowService_GetFlow",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/v1alpha1Flow"
+            }
+          },
+          "default": {
+            "description": "An unexpected error response.",
+            "schema": {
+              "$ref": "#/definitions/rpcStatus"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "flowId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "FlowService"
+        ]
+      }
+    }
+  },
+  "definitions": {
+    "NodeGroup": {
+      "type": "string",
+      "enum": [
+        "GROUP_UNSPECIFIED",
+        "GROUP_DEFAULT",
+        "GROUP_PASSWORD",
+        "GROUP_OIDC",
+        "GROUP_RECOVERY_LINK",
+        "GROUP_VERIFICATION_LINK"
+      ],
+      "default": "GROUP_UNSPECIFIED",
+      "description": " - GROUP_DEFAULT: The default group contains things such as the csrf_token.\n - GROUP_PASSWORD: The password group contains elements from the password authenticator.\n - GROUP_OIDC: The oidc group contains nodes from the OpenID Connect authenticator."
+    },
+    "protobufAny": {
+      "type": "object",
+      "properties": {
+        "typeUrl": {
+          "type": "string",
+          "description": "A URL/resource name that uniquely identifies the type of the serialized\nprotocol buffer message. This string must contain at least\none \"/\" character. The last segment of the URL's path must represent\nthe fully qualified name of the type (as in\n`path/google.protobuf.Duration`). The name should be in a canonical form\n(e.g., leading \".\" is not accepted).\n\nIn practice, teams usually precompile into the binary all types that they\nexpect it to use in the context of Any. However, for URLs which use the\nscheme `http`, `https`, or no scheme, one can optionally set up a type\nserver that maps type URLs to message definitions as follows:\n\n* If no scheme is provided, `https` is assumed.\n* An HTTP GET on the URL must yield a [google.protobuf.Type][]\n  value in binary format, or produce an error.\n* Applications are allowed to cache lookup results based on the\n  URL, or have them precompiled into a binary to avoid any\n  lookup. Therefore, binary compatibility needs to be preserved\n  on changes to types. (Use versioned type names to manage\n  breaking changes.)\n\nNote: this functionality is not currently available in the official\nprotobuf release, and it is not used for type URLs beginning with\ntype.googleapis.com.\n\nSchemes other than `http`, `https` (or the empty scheme) might be\nused with implementation specific semantics."
+        },
+        "value": {
+          "type": "string",
+          "format": "byte",
+          "description": "Must be a valid serialized protocol buffer of the above specified type."
+        }
+      },
+      "description": "`Any` contains an arbitrary serialized protocol buffer message along with a\nURL that describes the type of the serialized message.\n\nProtobuf library provides support to pack/unpack Any values in the form\nof utility functions or additional generated methods of the Any type.\n\nExample 1: Pack and unpack a message in C++.\n\n    Foo foo = ...;\n    Any any;\n    any.PackFrom(foo);\n    ...\n    if (any.UnpackTo(\u0026foo)) {\n      ...\n    }\n\nExample 2: Pack and unpack a message in Java.\n\n    Foo foo = ...;\n    Any any = Any.pack(foo);\n    ...\n    if (any.is(Foo.class)) {\n      foo = any.unpack(Foo.class);\n    }\n\n Example 3: Pack and unpack a message in Python.\n\n    foo = Foo(...)\n    any = Any()\n    any.Pack(foo)\n    ...\n    if any.Is(Foo.DESCRIPTOR):\n      any.Unpack(foo)\n      ...\n\n Example 4: Pack and unpack a message in Go\n\n     foo := \u0026pb.Foo{...}\n     any, err := ptypes.MarshalAny(foo)\n     ...\n     foo := \u0026pb.Foo{}\n     if err := ptypes.UnmarshalAny(any, foo); err != nil {\n       ...\n     }\n\nThe pack methods provided by protobuf library will by default use\n'type.googleapis.com/full.type.name' as the type URL and the unpack\nmethods only use the fully qualified type name after the last '/'\nin the type URL, for example \"foo.bar.com/x/y.z\" will yield type\nname \"y.z\".\n\n\nJSON\n====\nThe JSON representation of an `Any` value uses the regular\nrepresentation of the deserialized, embedded message, with an\nadditional field `@type` which contains the type URL. Example:\n\n    package google.profile;\n    message Person {\n      string first_name = 1;\n      string last_name = 2;\n    }\n\n    {\n      \"@type\": \"type.googleapis.com/google.profile.Person\",\n      \"firstName\": \u003cstring\u003e,\n      \"lastName\": \u003cstring\u003e\n    }\n\nIf the embedded message type is well-known and has a custom JSON\nrepresentation, that representation will be embedded adding a field\n`value` which holds the custom JSON in addition to the `@type`\nfield. Example (for message [google.protobuf.Duration][]):\n\n    {\n      \"@type\": \"type.googleapis.com/google.protobuf.Duration\",\n      \"value\": \"1.212s\"\n    }"
+    },
+    "rpcStatus": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "message": {
+          "type": "string"
+        },
+        "details": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/protobufAny"
+          }
+        }
+      }
+    },
+    "v1alpha1Flow": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "title": "ID represents the flow's unique ID. When performing the login flow, this\nrepresents the id in the login UI's query parameter: http://\u003cselfservice.flows.login.ui_url\u003e/?flow=\u003cflow_id\u003e"
+        },
+        "type": {
+          "$ref": "#/definitions/v1alpha1FlowType",
+          "description": "Type represents the flow's type which can be either \"api\" or \"browser\", depending on the flow interaction."
+        },
+        "expiresAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "ExpiresAt is the time (UTC) when the flow expires. If the user still wishes to log in,\na new flow has to be initiated."
+        },
+        "issuedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "IssuedAt is the time (UTC) when the flow started."
+        },
+        "requestUrl": {
+          "type": "string",
+          "description": "RequestURL is the initial URL that was requested from ORY Kratos. It can be used\nto forward information contained in the URL's path or query for example."
+        },
+        "active": {
+          "type": "string",
+          "description": "If set contains the login method used. If the flow is new, it is unset.\nActive identity.CredentialsType `json:\"active,omitempty\" db:\"active_method\"`",
+          "title": "The active login method"
+        },
+        "nodes": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/v1alpha1Node"
+          }
+        }
+      }
+    },
+    "v1alpha1FlowType": {
+      "type": "string",
+      "enum": [
+        "TYPE_UNSPECIFIED",
+        "TYPE_BROWSER",
+        "TYPE_API"
+      ],
+      "default": "TYPE_UNSPECIFIED"
+    },
+    "v1alpha1Message": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "The ID of the message."
+        },
+        "text": {
+          "type": "string",
+          "description": "The text of the message."
+        },
+        "type": {
+          "$ref": "#/definitions/v1alpha1MessageType",
+          "description": "The type of the message."
+        },
+        "context": {
+          "type": "string",
+          "description": "The context of the message, encoded as JSON."
+        }
+      },
+      "description": "Represents a message in the UI.\n\nA message can be be a validation error, a system error, or some other type of informative text."
+    },
+    "v1alpha1MessageType": {
+      "type": "string",
+      "enum": [
+        "TYPE_UNSPECIFIED",
+        "TYPE_INFO",
+        "TYPE_ERROR"
+      ],
+      "default": "TYPE_UNSPECIFIED"
+    },
+    "v1alpha1Node": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "$ref": "#/definitions/v1alpha1NodeType",
+          "description": "The node's type."
+        },
+        "group": {
+          "$ref": "#/definitions/NodeGroup",
+          "description": "Group specifies which group (e.g. password, social sign in, ...) this node belongs to."
+        },
+        "messages": {
+          "$ref": "#/definitions/v1alpha1Message",
+          "description": "Contains error, validation, or other messages relevant for this node."
+        },
+        "input": {
+          "$ref": "#/definitions/v1alpha1NodeAttributesInput"
+        },
+        "text": {
+          "$ref": "#/definitions/v1alpha1NodeAttributesInput"
+        }
+      },
+      "description": "Node represents a flow's nodes.\n\nNodes are represented as HTML elements or their native UI equivalents. For example,\na node can be an `\u003cimg\u003e` tag, or an `\u003cinput element\u003e` but also `some plain text`."
+    },
+    "v1alpha1NodeAttributesInput": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "The input's element name."
+        },
+        "type": {
+          "type": "string",
+          "description": "The input's element type."
+        },
+        "valueString": {
+          "type": "string"
+        },
+        "valueNumber": {
+          "type": "number",
+          "format": "float"
+        },
+        "valueBool": {
+          "type": "boolean"
+        },
+        "required": {
+          "type": "boolean",
+          "description": "Marks this input field as required."
+        },
+        "label": {
+          "$ref": "#/definitions/v1alpha1Message",
+          "description": "The input's label text."
+        },
+        "pattern": {
+          "type": "string",
+          "description": "The input's pattern."
+        },
+        "disabled": {
+          "type": "boolean",
+          "description": "Sets the input's disabled field to true or false."
+        }
+      }
+    },
+    "v1alpha1NodeType": {
+      "type": "string",
+      "enum": [
+        "TYPE_UNSPECIFIED",
+        "TYPE_TEXT",
+        "TYPE_INPUT",
+        "TYPE_IMAGE",
+        "TYPE_ANCHOR"
+      ],
+      "default": "TYPE_UNSPECIFIED",
+      "description": " - TYPE_UNSPECIFIED: The default type is not valid.\n - TYPE_TEXT: A text node.\n - TYPE_INPUT: An input node.\n - TYPE_IMAGE: An image node.\n - TYPE_ANCHOR: An anchore node."
+    }
+  }
+}

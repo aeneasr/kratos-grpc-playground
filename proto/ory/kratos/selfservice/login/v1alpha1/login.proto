@@ -1,0 +1,88 @@
+syntax = "proto3";
+
+package ory.kratos.selfservice.login.v1alpha1;
+
+import "google/api/annotations.proto";
+import "google/protobuf/timestamp.proto";
+import "ory/kratos/ui/v1alpha1/ui.proto";
+
+option go_package = "github.com/ory/kratos/api/kratos/selfservice/login/v1alpha1;ui";
+
+message Flow {
+  // ID represents the flow's unique ID. When performing the login flow, this
+  // represents the id in the login UI's query parameter: http://<selfservice.flows.login.ui_url>/?flow=<flow_id>
+  string id = 1;
+
+  enum Type {
+    TYPE_UNSPECIFIED = 0;
+    TYPE_BROWSER = 1;
+    TYPE_API = 2;
+  }
+
+  // Type represents the flow's type which can be either "api" or "browser", depending on the flow interaction.
+  Type type = 2;
+
+  // ExpiresAt is the time (UTC) when the flow expires. If the user still wishes to log in,
+  // a new flow has to be initiated.
+  google.protobuf.Timestamp expires_at = 3;
+
+  // IssuedAt is the time (UTC) when the flow started.
+  google.protobuf.Timestamp issued_at = 4;
+
+  // RequestURL is the initial URL that was requested from ORY Kratos. It can be used
+  // to forward information contained in the URL's path or query for example.
+  string request_url = 5;
+
+  // The active login method
+  //
+  // If set contains the login method used. If the flow is new, it is unset.
+  // Active identity.CredentialsType `json:"active,omitempty" db:"active_method"`
+  string active = 6;
+
+  repeated ory.kratos.ui.v1alpha1.Node nodes = 7;
+
+  // Messages contains a list of messages to be displayed in the Login UI. Omitting these
+  // messages makes it significantly harder for users to figure out what is going on.
+  //
+  // More documentation on messages can be found in the [User Interface Documentation](https://www.ory.sh/kratos/docs/concepts/ui-user-interface/).
+  //	Messages text.Messages `json:"messages" db:"messages" faker:"-"`
+
+  // List of login methods
+  //
+  // This is the list of available login methods with their required form fields, such as `identifier` and `password`
+  // for the password login method. This will also contain error messages such as "password can not be empty".
+  //
+  // required: true
+  // Methods map[identity.CredentialsType]*FlowMethod `json:"methods" faker:"login_flow_methods" db:"-"`
+
+  // MethodsRaw is a helper struct field for gobuffalo.pop.
+  //	MethodsRaw []FlowMethod `json:"-" faker:"-" has_many:"selfservice_login_flow_methods" fk_id:"selfservice_login_flow_id"`
+
+  // CreatedAt is a helper struct field for gobuffalo.pop.
+  //	CreatedAt time.Time `json:"-" db:"created_at"`
+
+  // UpdatedAt is a helper struct field for gobuffalo.pop.
+  //	UpdatedAt time.Time `json:"-" db:"updated_at"`
+
+  // CSRFToken contains the anti-csrf token associated with this flow. Only set for browser flows.
+  //	CSRFToken string `json:"-" db:"csrf_token"`
+
+  // Forced stores whether this login flow should enforce re-authentication.
+  //	Forced bool `json:"forced" db:"forced"`
+}
+
+message GetFlowResponse {
+  string id = 1;
+}
+
+message GetFlowRequest {
+  string flow_id = 1;
+}
+
+service FlowService {
+  rpc GetFlow(GetFlowRequest) returns (Flow) {
+    option (google.api.http) = {
+      get: "/self-service/login/flows/{flow_id}"
+    };
+  }
+}

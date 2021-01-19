@@ -1,0 +1,120 @@
+syntax = "proto3";
+package ory.kratos.ui.v1alpha1;
+
+import "google/protobuf/any.proto";
+
+option go_package = "github.com/ory/kratos/api/kratos/ui/v1alpha1;ui";
+
+/**
+ * Represents a message in the UI.
+ *
+ * A message can be be a validation error, a system error, or some other type of informative text.
+ */
+message Message {
+  // The ID of the message.
+  string id = 1;
+
+  // The text of the message.
+  string text = 2;
+
+  enum Type {
+    TYPE_UNSPECIFIED = 0;
+    TYPE_INFO = 1;
+    TYPE_ERROR = 2;
+  }
+
+  // The type of the message.
+  Type type = 3;
+
+  // The context of the message, encoded as JSON.
+  string context = 4;
+}
+
+
+/**
+ * Node represents a flow's nodes.
+ *
+ * Nodes are represented as HTML elements or their native UI equivalents. For example,
+ * a node can be an `<img>` tag, or an `<input element>` but also `some plain text`.
+ */
+message Node {
+  enum Type {
+    // The default type is not valid.
+    TYPE_UNSPECIFIED = 0;
+
+    // A text node.
+    TYPE_TEXT = 1;
+
+    // An input node.
+    TYPE_INPUT = 2;
+
+    // An image node.
+    TYPE_IMAGE = 3;
+
+    // An anchore node.
+    TYPE_ANCHOR = 4;
+  }
+
+  // The node's type.
+  Type type = 1;
+
+  enum Group {
+    GROUP_UNSPECIFIED = 0;
+
+    // The default group contains things such as the csrf_token.
+    GROUP_DEFAULT = 1;
+
+    // The password group contains elements from the password authenticator.
+    GROUP_PASSWORD = 2;
+
+    // The oidc group contains nodes from the OpenID Connect authenticator.
+    GROUP_OIDC = 3;
+
+    GROUP_RECOVERY_LINK = 4;
+
+    GROUP_VERIFICATION_LINK = 5;
+  }
+
+  // Group specifies which group (e.g. password, social sign in, ...) this node belongs to.
+  Group group = 2;
+
+  // Contains error, validation, or other messages relevant for this node.
+  Message messages = 4;
+
+  oneof attributes {
+    NodeAttributesInput input = 5;
+    NodeAttributesInput text = 6;
+  };
+}
+
+message NodeAttributesInput {
+  // The input's element name.
+  string name = 1;
+
+  // The input's element type.
+  string type = 2;
+
+  // The input's value. Must be a primitive value (empty, int, float, string, bool).
+  oneof value {
+    string value_string = 8;
+    float value_number = 9;
+    bool value_bool = 10;
+  }
+
+  // Marks this input field as required.
+  bool required = 4;
+
+  // The input's label text.
+  Message label = 5;
+
+  // The input's pattern.
+  string pattern = 6;
+
+  // Sets the input's disabled field to true or false.
+  bool disabled = 7;
+}
+
+message NodeAttributesText {
+  // The text.
+  Message text = 6;
+}
